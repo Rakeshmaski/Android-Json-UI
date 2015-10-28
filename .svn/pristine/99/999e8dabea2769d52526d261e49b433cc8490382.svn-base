@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_height="wrap_content"
+    android:layout_width="match_parent"
+    android:gravity="center_vertical"
+    android:clickable="true"
+    android:background="#fff"
+    android:orientation="vertical"
+    >
+    
+    <include layout="@layout/list_section"     
+        android:id="@+id/task_section_header"/>
+    
+    <LinearLayout
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:gravity="center_vertical">
+    	<ImageView
+        	android:id="@+id/chk_complete"
+        	android:layout_width="wrap_content"
+        	android:layout_height="wrap_content"
+        	android:layout_centerVertical="true"
+        	android:layout_marginLeft="10dp"
+        	android:src="@drawable/checkunchecked_xhdpi"
+        	/>
+    	<TextView
+    		android:id="@+id/description"
+        	android:layout_width="wrap_content"
+        	android:layout_height="wrap_content"
+        	android:text=""
+        	android:textColor="#888"
+        	android:textSize="14sp"
+        	android:layout_marginLeft="10dp"
+        	android:lineSpacingExtra="1dp"
+        />    
+    </LinearLayout>
+    <TextView          
+    	android:id="@+id/divider"
+        android:layout_width="fill_parent" 
+        android:layout_height="1dp" 
+        android:background="#eee" 
+        />
+</LinearLayout>    

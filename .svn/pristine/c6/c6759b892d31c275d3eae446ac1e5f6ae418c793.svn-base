@@ -1,0 +1,107 @@
+package com.qurater.pivotal.rest;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+
+import android.annotation.SuppressLint;
+import android.app.Activity;
+
+import com.loopj.android.http.RequestParams;
+import com.qurater.pivotal.R;
+import com.qurater.pivotal.api.PivotalConstants;
+import com.qurater.pivotal.api.Project;
+import com.qurater.pivotal.api.URLMap;
+import com.qurater.pivotal.interfaces.IProjectsConsumer;
+import com.qurater.pivotal.storage.LoggedInUserStore;
+
+
+public class ProjectsApi implements IDataSink {
+	
+	private IProjectsConsumer activity;
+	private static Map<Long, Project> projects = null;
+	/**
+	 * Constructor
+	 */
+	public ProjectsApi(IProjectsConsumer activity) {
+		this.activity = activity;
+	}
+	
+	/**
+	 * Login
+	 */
+	public void getProjects() {
+		String url = URLMap.getUrl("projects_url");
+		RequestParams params = new RequestParams();
+		params.put(PivotalConstants.FIELDS, "id,name,description,current_velocity,current_volatility,memberships,point_scale,current_iteration_number");
+		RemoteDataFetcher.get(url, params, activity.getApplicationContext(), this);
+	}
+
+	/**
+	 * Login
+	 */
+	public static List<Project> getStoredProjects(Activity activity) {
+		JSONArray jProjects = LoggedInUserStore.getLoggedInUserProjects(activity);
+		if (jProjects != null) {
+			List<Project> projects = new ArrayList<Project>();
+			for (int i = 0; i < jProjects.length(); i++) {
+			    try {
+					projects.add(Project.fromJson(jProjects.getJSONObject(i)));
+				} catch (JSONException e) {
+					e.printStackTrace();
+				}
+			}
+			return projects;
+		}
+		return null;
+	}
+	
+	/**
+	 * Login
+	 */
+	@SuppressLint("UseSparseArrays") 
+	public static Map<Long, Project> getStoredProjectsMap(Activity activity) {
+		if (projects == null) {
+			JSONArray jProjects = LoggedInUserStore.getLoggedInUserProjects(activity);
+			if (jProjects != null) {
+				projects = new HashMap<Long, Project>();
+				for (int i = 0; i < jProjects.length(); i++) {
+				    try {
+				    	Project p = Project.fromJson(jProjects.getJSONObject(i));
+				    	projects.put(p.getId(), p);
+					} catch (JSONException e) {
+						e.printStackTrace();
+					}
+				}
+			}
+		}
+		return projects;
+	}
+	
+	@Override
+	public void receive(String response) {
+		try {
+			System.err.println(response);
+			List<Project> projects = new ArrayList<Project>();
+			JSONArray jProjects = new JSONArray(response);
+			LoggedInUserStore.storeLoggedInUserProjects(activity.getApplicationContext(), jProjects);
+			for (int i = 0; i < jProjects.length(); i++) {
+			    projects.add(Project.fromJson(jProjects.getJSONObject(i)));
+			}
+			activity.onProjectsLoadSuccess(projects);
+			
+		} catch (JSONException e) {
+			activity.onProjectsLoadFailure(activity.getApplicationContext().getResources().getString(R.string.projects_failure));
+		}
+	}
+
+	@Override
+	public void error(Throwable e, String response) {
+		System.err.println(response);
+		activity.onProjectsLoadFailure(activity.getApplicationContext().getResources().getString(R.string.projects_failure));
+	}
+}

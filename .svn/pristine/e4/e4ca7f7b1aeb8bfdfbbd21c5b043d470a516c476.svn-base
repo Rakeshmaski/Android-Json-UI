@@ -1,0 +1,99 @@
+package com.qurater.pivotal.activity;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import android.graphics.Typeface;
+import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
+import android.view.View;
+import android.widget.ListView;
+import android.widget.ProgressBar;
+import android.widget.TextView;
+
+import com.qurater.pivotal.R;
+import com.qurater.pivotal.adapter.CommentAdapter;
+import com.qurater.pivotal.adapter.MergedAdapter;
+import com.qurater.pivotal.adapter.StoryDetailAdapter;
+import com.qurater.pivotal.adapter.TaskAdapter;
+import com.qurater.pivotal.api.Comment;
+import com.qurater.pivotal.api.Font;
+import com.qurater.pivotal.api.PivotalConstants;
+import com.qurater.pivotal.api.QuraterConstants;
+import com.qurater.pivotal.api.Story;
+import com.qurater.pivotal.api.Task;
+import com.qurater.pivotal.interfaces.IStoryConsumer;
+import com.qurater.pivotal.rest.StoryApi;
+
+
+public class StoryActivity extends FragmentActivity implements IStoryConsumer{
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        getActionBar().hide();
+        setContentView(R.layout.activity_story_detail);
+        
+        Long projectId = getIntent().getLongExtra(QuraterConstants.INTENT_PROJECT_ID, Long.valueOf(-1));
+        Long storyId = getIntent().getLongExtra(QuraterConstants.INTENT_STORY_ID, Long.valueOf(-1));
+        //
+        Typeface typefaceLatoBold = Font.getFont(getApplicationContext(), "Lato-Bold.ttf");
+        TextView tvTitle = (TextView) findViewById(R.id.title);
+        tvTitle.setTypeface(typefaceLatoBold);
+        tvTitle.setText(getResources().getString(R.string.story).replace(PivotalConstants.STORY_ID, "#" + storyId));
+        //
+        View goBack = findViewById(R.id.menu_go_back);
+        goBack.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				onBackPressed();
+			}
+		});
+        StoryApi api = new StoryApi(this);
+        api.getStory(projectId, storyId);
+    }
+    
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        overridePendingTransition(0, R.anim.slide_right_detail);   
+    }
+    
+	@Override
+	public void onStoryLoadSuccess(Story story) {
+		//Merge 2 lists
+        MergedAdapter mergedAdapter = new MergedAdapter();
+        
+        //
+        List<Story> stories = new ArrayList<Story>();
+        stories.add(story);
+        StoryDetailAdapter storyDetailAdapter = new StoryDetailAdapter(this, mergedAdapter);
+        storyDetailAdapter.update(stories);
+        mergedAdapter.addSection("story", storyDetailAdapter);
+
+        //
+        List<Task> tasks = story.getTasks();
+        TaskAdapter taskAdapter = new TaskAdapter(this, mergedAdapter);
+        taskAdapter.update(tasks);
+        mergedAdapter.addSection("tasks", taskAdapter);
+
+        //
+        List<Comment> comments = story.getComments();
+        CommentAdapter commentAdapter = new CommentAdapter(this, mergedAdapter, story);
+        commentAdapter.update(comments);
+        mergedAdapter.addSection("comments", commentAdapter);
+        
+        //
+        ListView storyView = (ListView) findViewById(R.id.story);
+        storyView.setAdapter(mergedAdapter);
+        
+        ProgressBar progress = (ProgressBar) findViewById(R.id.progress);
+        progress.setVisibility(View.GONE);
+	}
+
+	@Override
+	public void onStoryLoadFailure(String reason) {
+		findViewById(R.id.progress).setVisibility(View.GONE);
+		findViewById(R.id.ico_no_results).setVisibility(View.VISIBLE);
+	}
+}

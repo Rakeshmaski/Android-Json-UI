@@ -1,0 +1,155 @@
+package com.qurater.pivotal.adapter;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import android.app.Activity;
+import android.content.Intent;
+import android.graphics.Typeface;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.BaseAdapter;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
+
+import com.qurater.pivotal.R;
+import com.qurater.pivotal.activity.PivotalActivitiesFragment;
+import com.qurater.pivotal.activity.StoryActivity;
+import com.qurater.pivotal.api.Font;
+import com.qurater.pivotal.api.PivotalActivity;
+import com.qurater.pivotal.api.QuraterConstants;
+import com.qurater.pivotal.api.Story;
+
+
+public class PivotalActivityAdapter extends BaseAdapter {
+ 
+	public static int MAX_LENGTH = 200;
+    protected List<PivotalActivity> activities;
+    protected PivotalActivitiesFragment activity;
+ 
+    public PivotalActivityAdapter() {
+    }
+    
+    public PivotalActivityAdapter(PivotalActivitiesFragment activity) {
+        this.activity = activity;
+    }
+       
+    @Override
+    public int getCount() {
+        return (activities != null)? activities.size(): 0;
+    }
+ 
+    @Override
+    public Object getItem(int position) {
+        return (activities != null)? activities.get(position): null;
+    }
+ 
+    @Override
+    public long getItemId(int position) {
+        return position;
+    }
+ 
+ 
+	@Override
+    public View getView(int position, View convertView, ViewGroup parent) {                                           
+        View layout;
+        if (convertView == null) {
+            layout = getActivity().getLayoutInflater().inflate(
+                     R.layout.one_pivotal_activity, 
+                     parent, 
+                     false);
+        } else {
+            layout = (RelativeLayout) convertView;
+        }
+          
+        final PivotalActivity pivotalActivity = getPivotalActivity(position); 
+        Typeface typefaceLatoRegular = Font.getFont(getActivity().getApplicationContext(), "Lato-Regular.ttf");
+        Typeface typefaceLatoBold = Font.getFont(getActivity().getApplicationContext(), "Lato-Bold.ttf");
+        //Typeface typefaceLatoBlack = Font.getFont(getActivity().getApplicationContext(), "Lato-Black.ttf");
+        //Typeface typefaceDSBI = Font.getFont(getActivity().getApplicationContext(), "DroidSerif-BoldItalic.ttf");
+        //Typeface typefaceOpenSans = Font.getFont(getActivity().getApplicationContext(), "OpenSans-CondBold.ttf");
+        
+        TextView tv = (TextView)layout.findViewById(R.id.message);
+        tv.setTypeface(typefaceLatoRegular);
+        String message = pivotalActivity.getMessage();
+        tv.setText(message);
+        
+        tv = (TextView)layout.findViewById(R.id.changes);
+        tv.setVisibility(View.VISIBLE);
+        tv.setTypeface(typefaceLatoRegular);
+        List<Object> changes = pivotalActivity.getChanges();
+        tv.setText(changes.toString());
+        
+        tv = (TextView)layout.findViewById(R.id.primary_resources);
+        tv.setVisibility(View.VISIBLE);
+        tv.setTypeface(typefaceLatoRegular);
+        List<Object> primaryResources = pivotalActivity.getPrimaryResources();
+        tv.setText(primaryResources.toString());
+        
+        if (pivotalActivity.getPrimaryResources() != null && pivotalActivity.getPrimaryResources().size() > 0) {
+        	Object o = pivotalActivity.getPrimaryResources().get(0);
+        	if (o instanceof Story) {
+        		final Story story = (Story)o;
+        		tv = (TextView)layout.findViewById(R.id.name);
+        		tv.setVisibility(View.VISIBLE);
+        		layout.findViewById(R.id.changes).setVisibility(View.GONE);
+        		layout.findViewById(R.id.primary_resources).setVisibility(View.GONE);
+        		tv.setTypeface(typefaceLatoBold);
+        		tv.setText(story.getName());
+                layout.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                	public void onClick(View v) {
+                    	Intent intent = new Intent(getActivity(), StoryActivity.class);
+                		intent.putExtra(QuraterConstants.INTENT_PROJECT_ID, Long.valueOf(pivotalActivity.getProjectId()));
+                        intent.putExtra(QuraterConstants.INTENT_STORY_ID, story.getId());
+                        getActivity().startActivity(intent);
+                        getActivity().overridePendingTransition(R.anim.slide_left_detail, R.anim.stay_in_place_detail);
+        			}
+        		});
+        	}
+        }
+        /*
+        tv = (TextView)layout.findViewById(R.id.owner);
+        tv.setTypeface(typefaceDSBI);
+        StringBuffer sb = new StringBuffer();
+        Project currentProject = null;
+		Map<Long, Project> m_projects = ProjectsApi.getStoredProjectsMap(getActivity());
+        if (m_projects != null) {
+        	currentProject = m_projects.get(pivotalActivity.getProjectId());
+        }
+    	if (currentProject != null) {
+    		Integer ownerId = pivotalActivity.getPerformedById();
+            Person person = currentProject.getMember(Long.valueOf(ownerId));
+            sb.append(person.getUsername());
+    	}
+        tv.setText(sb);*/
+        
+
+        
+        return layout;
+    }
+ 
+    public void clear() {
+    	activities.clear();
+        notifyDataSetChanged();
+    }
+       
+    public void update(List<PivotalActivity> activities) {
+    	activities = (activities == null)? new ArrayList<PivotalActivity>(): activities; 
+        if (this.activities != null) {     
+            this.activities.addAll(activities);
+        } else {
+            this.activities = activities;
+        }
+        notifyDataSetChanged();
+    }
+    
+    public Activity getActivity() {
+    	return activity.getActivity();
+    }
+    
+    public PivotalActivity getPivotalActivity(int position) {
+    	return activities.get(position);
+    }
+    
+}

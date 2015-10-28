@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="#5282b0"
+    android:id="@+id/my_groups_action_bar"
+    >
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:id="@+id/my_groups_header"
+        >
+		<ImageView
+            android:id="@+id/drawer"
+            android:contentDescription="@string/ui_toggle_for_menu"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/menu_xhdpi"
+            android:layout_centerVertical="true"
+            android:layout_alignParentLeft="true"
+            android:layout_marginLeft="15dp"
+            android:clickable="true" 
+        />               
+        <TextView
+            android:id="@+id/title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:text=""
+            android:textColor="#fff"
+            android:textSize="22sp" />
+    </RelativeLayout>
+    <TextView          
+       android:id="@+id/divider"
+        android:layout_width="fill_parent" 
+        android:layout_height="1dp"
+        android:background="#ececec" 
+        android:layout_below="@+id/my_groups_header"
+    />
+ 
+</RelativeLayout>

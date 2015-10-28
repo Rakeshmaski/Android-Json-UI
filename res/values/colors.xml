@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="pink">#f6e3f2</color>
+    <color name="girly_pink">#f82ad6</color>
+    <color name="light_gray">#f8f8f8</color>
+    <color name="gray">#efefef</color>
+    <color name="white">#ffffff</color>
+    <color name="black">#000000</color>
+    <color name="dark_gray">#dedede</color>
+    <color name="sa_green">#14a804</color>
+    <color name="stacked_green">#118504</color>
+    <color name="accent_green">#97e08f</color>
+    <color name="orange">#e49a1e</color>
+    <color name="fb_gray">#cbcbcb</color>
+    
+    <!-- blue -->
+    <!--<color name="theme">#ffffff</color>-->
+    
+    <!-- green--> 
+    <color name="theme">#ffffff</color>
+    
+    <!-- red -->
+    <!--<color name="theme">#f47151</color>-->
+    
+    <color name="stacked_theme">#a3acd8</color>
+    <color name="accent_theme">#8c96ce</color>
+    <color name="tab_theme">#5c6bb9</color>
+    <drawable name="highlight">#dedede</drawable>
+    <drawable name="normal_background">#ffffff</drawable>
+    <drawable name="fb_gray_background">#cbcbcb</drawable>
+</resources>

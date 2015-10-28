@@ -1,0 +1,74 @@
+package com.qurater.pivotal.adapter;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import android.app.Activity;
+import android.widget.BaseAdapter;
+
+import com.qurater.pivotal.activity.StoryActivity;
+import com.qurater.pivotal.api.Story;
+
+
+public class StoryDetailAdapter extends StoryAdapter {
+    private StoryActivity activity;
+    private BaseAdapter parentAdapter;
+    
+    public StoryDetailAdapter() {
+    }
+    
+    public StoryDetailAdapter(StoryActivity activity, BaseAdapter parentAdapter) {
+        this.activity = activity;
+        this.parentAdapter = parentAdapter;
+    }
+       
+    @Override
+    public int getCount() {
+    	return (stories != null)? stories.size(): 0;
+    }
+ 
+    @Override
+    public Object getItem(int position) {
+    	return (stories != null)? stories.get(position): null;
+    }
+ 
+    @Override
+    public long getItemId(int position) {
+        return position;
+    }
+ 
+    public void update(List<Story> stories) {
+        stories = (stories == null)? new ArrayList<Story>(): stories; 
+        if (this.stories != null) {     
+            this.stories.addAll(stories);
+        } else {
+            this.stories = stories;
+        }
+        notifyDataSetChanged();
+        parentAdapter.notifyDataSetChanged();
+    } 
+
+  
+    @Override
+    public int getItemViewType(int position) {
+    	//Define a way to determine which layout to use, here it's just evens and odds.
+    	return 0;
+    }
+
+    @Override
+    public int getViewTypeCount() {
+    	return 1; // Count of different layouts
+    }
+    
+    @Override
+    public Activity getActivity() {
+    	return activity;
+    }
+    
+    @Override
+    public String getStoryDescription(Story story) {
+    	String description = story.getDescription();
+        description = (description == null)? "": description;
+        return description;
+    }
+}

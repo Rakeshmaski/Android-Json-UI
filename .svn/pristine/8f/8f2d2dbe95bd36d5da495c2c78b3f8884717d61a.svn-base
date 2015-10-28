@@ -1,0 +1,14 @@
+package com.qurater.pivotal.api;
+
+
+public class QuraterConstants {
+	
+	public static final int PAGE_SIZE = 10;
+	public static final String INTENT_PROJECT_ID = "com.qurater.pivotal.project.id";
+	public static final String INTENT_STORY_ID = "com.qurater.pivotal.story.id";
+	public static final String CURRENT_STORIES = "current_stories";
+	public static final String USER_PREFERENCES = "com.qurater.pivotal.user_preferences";
+	public static final String USER_PREFERENCES_USER = "user";
+	public static final String USER_PREFERENCES_PROJECTS = "projects";
+	public static final String DELIMITER = ", ";
+}
